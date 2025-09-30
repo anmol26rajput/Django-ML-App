@@ -8,13 +8,13 @@ from .services import predict_iris
 def home(request):
     return render(request, "predictor/predict_form.html", {"form": IrisForm()})
 
-
 @csrf_exempt
 @api_view(["POST"])
 def predict_form(request):
     form = IrisForm(request.data)
     if not form.is_valid():
-        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     data = form.cleaned_data
     features = [
         data["sepal_length"],
@@ -30,7 +30,7 @@ def predict_form(request):
 @api_view(["POST"])
 def predict_api(request):
     required = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
-    payload = request.data
+    payload = request.data 
     missing = [k for k in required if k not in payload]
     if missing:
         return Response({"error": f"Missing: {', '.join(missing)}"}, status=status.HTTP_400_BAD_REQUEST)
